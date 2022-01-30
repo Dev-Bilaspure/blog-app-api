@@ -94,6 +94,8 @@ router.get('/:id/published', async (req,res) => {
   }
 })
 
+
+
 // get all draft posts by a user
 router.get('/:id/draft', async (req,res) => {
   try {
