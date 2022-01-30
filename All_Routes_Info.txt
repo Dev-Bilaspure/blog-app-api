@@ -1,0 +1,66 @@
+auth route-------------------------------------------------------
+// register a user
+http://localhost:5000/api/auth/register  => post
+
+// login a user
+http://localhost:5000/api/auth/login  => post
+
+
+users route:------------------------------------------------------
+
+// update a user
+http://localhost:5000/api/users/:id  => put
+
+// get single user by id
+http://localhost:5000/api/users/:id=> get
+
+// follow a user
+http://localhost:5000/api/users/:id/follow => put
+
+// unfollow a user
+http://localhost:5000/api/users/:id/unfollow => put
+
+// to get all the posts liked a a user
+http://localhost:5000/api/users/:id/liked => get
+
+
+posts route:---------------------------------------------------------
+
+// to publish a new post
+http://localhost:5000/api/posts/publish  =>  post
+
+// to draft a new post
+http://localhost:5000/api/posts/draft  =>  post
+
+// to publish or to update and publish a existing post
+http://localhost:5000/api/posts/:id/publish  =>  put
+
+// to draft or to update and draft a existing post
+http://localhost:5000/api/posts/:id/draft  => put
+
+// to delete a single post by id
+http://localhost:5000/api/posts/:id  => delete
+
+// to like or unlike a post
+http://localhost:5000/api/posts/:id/like  =>  put
+
+// to bookmark a post by a user
+http://localhost:5000/api/posts/:id/bookmark  =>  put
+
+// to get a partucular tag related posts
+http://localhost:5000/api/posts/:tag/tag  => get
+
+// to get posts from users to whom a user is following
+http://localhost:5000/api/posts/:id/following
+
+// to get a single post
+http://localhost:5000/api/posts/:id
+
+// to get all post bookmark by a user
+http://localhost:5000/api/posts/:id/bookmark
+
+
+
+
+
+

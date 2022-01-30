@@ -1,10 +1,11 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const Post = require("../models/Post");
 
 // update user
 router.put("/:id", async (req, res) => {
-  if (req.body.userId === req.params.id || req.body.isAdmin) {
+  if (req.body.userId === req.params.id) {
     if (req.body.password) {
       try {
         const salt = await bcrypt.genSalt(10);
@@ -40,7 +41,7 @@ router.get("/:id", async (req, res) => {
 
 
 // follow a user
-router.put("/:id/follow", async (req, res) => {
+router.put("/:id/follow", async (req, res) => {  // params.id is user jisko follow karna hai
   if (req.body.userId !== req.params.id) {
     try {
       const user = await User.findById(req.params.id);
@@ -83,4 +84,49 @@ router.put("/:id/unfollow", async (req, res) => {
   }
 });
 
+// get all published posts by a user
+router.get('/:id/published', async (req,res) => {
+  try {
+    const publishedPosts = await Post.find({$and: [{ userId: req.params.id }, {isPublished: true}]});
+    res.status(200).json(publishedPosts);
+  } catch(err) {
+    res.status(500).json(err);
+  }
+})
+
+// get all draft posts by a user
+router.get('/:id/draft', async (req,res) => {
+  try {
+    const draftPosts = await Post.find({$and: [{ userId: req.params.id }, {isPublished: false}]});
+    res.status(200).json(draftPosts);
+  } catch(err) {
+    res.status(500).json(err);
+  }
+})
+
+// get bookmark posts
+router.get('/:id/bookmark', async(req,res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(200).json(user.bookmarks)
+  } catch(err) {
+    res.status(500).json(err);
+  }
+}) 
+
+// get all liked posts by a user
+router.get('/:id/liked', async (req,res) => {
+  try {
+    const likedPosts = await Post.find({ likes: { $elemMatch:  {$eq: req.params.id} } })
+    res.status(200).json(likedPosts);
+  } catch(err) {
+    res.status(500).json(err);
+  }
+})
+
+
 module.exports = router;
+
+
+
+

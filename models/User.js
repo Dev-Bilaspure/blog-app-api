@@ -41,14 +41,10 @@ const UserSchema = new mongoose.Schema({
     max: 150,
     default: "",
   },
-  drafts: {
-    type: Array,
-    default: []
-  },
   bookmarks: {
     type: Array,
     default: []
-  },
+  }
 },
   {timestamps: true}
 )
