@@ -167,13 +167,14 @@ router.get('/:tag/tag', async (req,res) => {
 router.get('/:id/following', async (req,res) => {  
   try {
     const user = await User.findById(req.params.id);
-    const posts = await Post.find({userId: {$in: user.followings}});
+    const posts = await Post.find({$and: [{userId: {$in: user.followings}}, {isPublished: true}]});
     res.status(200).json(posts);
   } catch(err) {
     res.status(500).json(err);
   }
 })
 
+// to get post by id
 router.get('/:id', async (req,res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -182,4 +183,15 @@ router.get('/:id', async (req,res) => {
     res.status(500).json(err);
   }
 })
+
+// to get all published posts from every user
+router.get('/', async (req,res) => {
+  try {
+    const posts = await Post.find({isPublished: true});
+    res.status(200).json(posts);
+  } catch(err) {
+    res.status(500).json(err);
+  }
+})
 module.exports = router;
+
