@@ -46,9 +46,13 @@ router.put("/:id/follow", async (req, res) => {  // params.id is user jisko foll
     try {
       const user = await User.findById(req.params.id);
       const currentUser = await User.findById(req.body.userId);
-      if (!user.followers.includes(req.body.userId)) {
-        await user.updateOne({ $push: { followers: req.body.userId } });
-        await currentUser.updateOne({ $push: { followings: req.params.id } });
+      const currUserAlreadyFollowsUser = currentUser.followings.some(ele => ele._id.toString() === req.params.id);
+      delete user.password;
+      delete currentUser.password;
+      console.log(currUserAlreadyFollowsUser);
+      if (!currUserAlreadyFollowsUser) {
+        await user.updateOne({ $push: { followers: currentUser } });
+        await currentUser.updateOne({ $push: { followings: user } });
         res.status(200).json("user has been followed");
       } else {
         res.status(403).json("you allready follow this user");
@@ -68,9 +72,10 @@ router.put("/:id/unfollow", async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
       const currentUser = await User.findById(req.body.userId);
-      if (user.followers.includes(req.body.userId)) {
-        await user.updateOne({ $pull: { followers: req.body.userId } });
-        await currentUser.updateOne({ $pull: { followings: req.params.id } });
+      const currUserAlreadyFollowsUser = currentUser.followings.some(ele => ele._id.toString() === req.params.id);
+      if(currUserAlreadyFollowsUser) {
+        await user.updateOne({ $pull: { followers: {_id: currentUser._id} } });
+        await currentUser.updateOne({ $pull: { followings: {_id: user._id} } });
         res.status(200).json("user has been unfollowed");
       } else {
         res.status(403).json("you dont follow this user");
@@ -147,7 +152,6 @@ router.get('/ranked', async (req,res) => {
     res.status(500).json(error);
   }
 })
-
 
 
 module.exports = router;

@@ -5,9 +5,9 @@ const mongoose = require('mongoose');
 
 // create new post as published post
 router.post("/publish", async (req, res) => {
-  const newPost = new Post(req.body);
-  newPost.isPublished = true;
   try {
+    const newPost = new Post(req.body);
+    newPost.isPublished = true;
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
   } catch (err) {
@@ -17,9 +17,9 @@ router.post("/publish", async (req, res) => {
 
 // create new post as draft post
 router.post("/draft", async (req, res) => {
-  const newPost = new Post(req.body);
-  newPost.isPublished = false;
   try {
+    const newPost = new Post(req.body);
+    newPost.isPublished = false;
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
   } catch (err) {
@@ -167,7 +167,11 @@ router.get('/:tag/tag', async (req,res) => {
 router.get('/:id/following', async (req,res) => {  
   try {
     const user = await User.findById(req.params.id);
-    const posts = await Post.find({$and: [{userId: {$in: user.followings}}, {isPublished: true}]});
+    let arr = [];
+    user.followings.forEach(ele => {
+      arr.push(ele._id);
+    })
+    const posts = await Post.find({$and: [{userId: {$in: arr}}, {isPublished: true}]});
     res.status(200).json(posts);
   } catch(err) {
     res.status(500).json(err);
