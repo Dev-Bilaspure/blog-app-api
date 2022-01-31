@@ -43,7 +43,7 @@ app.use(helmet());
 app.use(morgan("common"));
 
 app.get('/', (req,res) => {
-  res.send("Welcome of home page");
+  res.send("Melcome of home page");
 })
 
 app.use("/api/users", userRoute);

@@ -163,7 +163,7 @@ router.get('/:tag/tag', async (req,res) => {
   }
 })
 
-// get all posts of the users to whom a user is following
+// get all posts of the users to whom all a user is following
 router.get('/:id/following', async (req,res) => {  
   try {
     const user = await User.findById(req.params.id);

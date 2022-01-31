@@ -11,7 +11,7 @@ users route:------------------------------------------------------
 http://localhost:5000/api/users/:id  => put
 
 // get single user by id
-http://localhost:5000/api/users/:id=> get
+http://localhost:5000/api/users/user/:id=> get
 
 // follow a user
 http://localhost:5000/api/users/:id/follow => put
@@ -67,7 +67,6 @@ http://localhost:5000/api/posts/   =>  get
 
 // to get all post bookmark by a user
 http://localhost:5000/api/posts/:id/bookmark  =>  get
-
 
 
 

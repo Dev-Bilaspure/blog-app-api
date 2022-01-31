@@ -29,7 +29,7 @@ router.put("/:id", async (req, res) => {
 
 
 // get a user
-router.get("/:id", async (req, res) => {
+router.get("/user/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, updatedAt, ...other } = user._doc;
@@ -60,7 +60,6 @@ router.put("/:id/follow", async (req, res) => {  // params.id is user jisko foll
     res.status(403).json("you cant follow yourself");
   }
 });
-
 
 
 // unfollow a user
@@ -125,6 +124,30 @@ router.get('/:id/liked', async (req,res) => {
     res.status(500).json(err);
   }
 })
+
+// get all user sorted by their followers count
+router.get('/ranked', async (req,res) => {
+  try {
+    const rankedUsers = await User.aggregate([
+      {
+        $addFields: {
+          followersArrayLength: {
+            $size: "$followers"
+          }
+        }
+      },
+      {
+        $sort: {
+          followersArrayLength: -1
+        }
+      }
+    ])
+    res.status(200).json(rankedUsers);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
 
 
 module.exports = router;
