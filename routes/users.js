@@ -51,8 +51,18 @@ router.put("/:id/follow", async (req, res) => {  // params.id is user jisko foll
       delete currentUser.password;
       console.log(currUserAlreadyFollowsUser);
       if (!currUserAlreadyFollowsUser) {
-        await user.updateOne({ $push: { followers: currentUser } });
-        await currentUser.updateOne({ $push: { followings: user } });
+        await user.updateOne({ $push: { followers: {
+          _id: currentUser._id, 
+          name: currentUser.name, 
+          username: currentUser.username,
+          profilePicture: currentUser?.profilePicture
+        }}});
+        await currentUser.updateOne({ $push: { followings: {
+          _id: user._id, 
+          name: user.name, 
+          username: user.username,
+          profilePicture: user?.profilePicture
+        }}});
         res.status(200).json("user has been followed");
       } else {
         res.status(403).json("you allready follow this user");
@@ -147,13 +157,40 @@ router.get('/ranked', async (req,res) => {
         }
       }
     ])
-    res.status(200).json(rankedUsers);
+    let arr = [];
+    rankedUsers.forEach(rankedUser => {
+      arr.push({
+        _id: rankedUser._id,
+        name: rankedUser.name,
+        profilePicture: rankedUser?.profilePicture,
+        followersCount: rankedUser.followers.length
+      });
+    })
+    res.status(200).json(arr);
   } catch (error) {
     res.status(500).json(error);
   }
 })
 
+// get all followers of a user
+router.get('/:id/followers', async (req,res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(200).json(user.followers);
+  } catch(error) {
+    res.status(500).json(error);
+  }
+})
 
+// get all followings of a user
+router.get('/:id/followings', async (req,res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(200).json(user.followings);
+  } catch(error) {
+    res.status(500).json(error);
+  }
+})
 module.exports = router;
 
 
