@@ -146,7 +146,7 @@ router.get('/:id/draft', async (req,res) => {
 router.get('/:id/bookmark', async(req,res) => {
   try {
     const user = await User.findById(req.params.id);
-    const posts = await Post.find({_id: {$in: user.bookmarks}});
+    const posts = await Post.find({$and: [{_id: {$in: user.bookmarks}}, {isPublished: true}]});
     res.status(200).json(posts)
   } catch(err) {
     res.status(500).json(err);
@@ -156,7 +156,7 @@ router.get('/:id/bookmark', async(req,res) => {
 // get all liked posts by a user
 router.get('/:id/liked', async (req,res) => {
   try {
-    const likedPosts = await Post.find({ likes: { $elemMatch:  {$eq: req.params.id} } })
+    const likedPosts = await Post.find({$and: [{likes: {$elemMatch:  {$eq: req.params.id}}}, {isPublished: true}]})
     res.status(200).json(likedPosts);
   } catch(err) {
     res.status(500).json(err);

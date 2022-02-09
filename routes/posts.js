@@ -228,7 +228,7 @@ router.get('/', async (req,res) => {
 router.post('/tagsarray/withgiventags', async (req, res) => {
   try {
     // console.log(JSON.parse(req.body.tagsArray));
-    const posts = await Post.find({$and: [{tags: { $elemMatch:  {$in: req.body.tagsArray}}}, {isPublished: true}]})
+    const posts = await Post.find({$and: [{tags: {$elemMatch: {$in: req.body.tagsArray}}}, {isPublished: true}]})
     // const posts = await Post.find();
     res.status(200).json(posts);
   } catch(error) {
