@@ -225,11 +225,11 @@ router.get('/', async (req,res) => {
 })
 
 // all posts which have atleast one tag present in the given tag array
-router.get('/tagsarray/withgiventags', async (req, res) => {
+router.post('/tagsarray/withgiventags', async (req, res) => {
   try {
     // console.log(JSON.parse(req.body.tagsArray));
-    // const posts = await Post.find({$and: [{tags: { $elemMatch:  {$in: req.body.tagsArray}}}, {isPublished: true}]})
-    const posts = await Post.find();
+    const posts = await Post.find({$and: [{tags: { $elemMatch:  {$in: req.body.tagsArray}}}, {isPublished: true}]})
+    // const posts = await Post.find();
     res.status(200).json(posts);
   } catch(error) {
     res.status(500).json(error);
