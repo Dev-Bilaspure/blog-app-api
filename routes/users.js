@@ -180,16 +180,7 @@ router.get('/ranked', async (req,res) => {
         }
       }
     ]).limit(5);
-    let arr = [];
-    rankedUsers.forEach(rankedUser => {
-      arr.push({
-        _id: rankedUser._id,
-        name: rankedUser.name,
-        profilePicture: rankedUser?.profilePicture,
-        followersCount: rankedUser.followers.length
-      });
-    })
-    res.status(200).json(arr);
+    res.status(200).json(rankedUsers);
   } catch (error) {
     res.status(500).json(error);
   }
