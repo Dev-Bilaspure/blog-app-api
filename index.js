@@ -9,8 +9,16 @@ const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
 const multer = require("multer");
+const path = require("path");
 
 dotenv.config();
+
+//middleware
+app.use(express.json());
+app.use("/images", express.static(path.join(__dirname, "/images")));
+app.use(cors())
+app.use(helmet());
+app.use(morgan("common"));
 
 const URL = process.env.MONGODB_URL;
 mongoose.connect(URL, {
@@ -36,15 +44,11 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
   res.status(200).json("File has been uploaded");
 });
 
-//middleware
-app.use(express.json());
-app.use(cors())
-app.use(helmet());
-app.use(morgan("common"));
 
 app.get('/', (req,res) => {
   res.send("Melcome of home page");
 })
+
 
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);

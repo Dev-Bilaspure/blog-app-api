@@ -2,6 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User");
 const Post = require("../models/Post");
 const mongoose = require('mongoose');
+const { findByIdAndUpdate } = require("../models/User");
 
 // create new post as published post
 router.post("/publish", async (req, res) => {
@@ -110,17 +111,22 @@ router.put("/:id/like", async (req, res) => {
     const post = await Post.findById(req.params.id);
     if(post) {
       if (!post.likes.includes(req.body.userId)) {
-        await post.updateOne({ $push: { likes: req.body.userId } });
+        const updatedPost = await Post.findByIdAndUpdate(
+          req.params.id, 
+          {$push: {likes: req.body.userId}}
+        );
         res.status(200).json("The post has been liked");
       } else {
-        await post.updateOne({ $pull: { likes: req.body.userId } });
+        const updatedPosts = await Post.findByIdAndUpdate(
+          req.params.id, 
+          {$pull: {likes: req.body.userId}}
+        );
         res.status(200).json("The post has been unliked");
       }
     } 
     else {
       res.status(403).json("Post does not exist");
     }
-    
   } catch (err) {
     res.status(500).json(err);
   }
@@ -128,29 +134,53 @@ router.put("/:id/like", async (req, res) => {
 
 // add/remove a post to/from bookmark for a user
 router.put("/:id/bookmark", async (req, res) => {   // post id in params
+
   try {
     const user = await User.findById(req.body.userId);
-    if(user) {
-      const post = await Post.findById(req.params.id);
-      if(post) {
-        const postFound = user.bookmarks.some(el => el._id.toString() === req.params.id);
-        if(!postFound) {
-          await user.updateOne({ $push: { bookmarks: post } });
-          res.status(200).json("Bookmark has been added");
-        }
-        else {
-          await user.updateOne({ $pull: { bookmarks: { _id: mongoose.Types.ObjectId(req.params.id) } } });
-          res.status(200).json("Bookmark has been removed");
-        }
-      } else {
-        res.status(403).json("Post does not exist");
-      }
+    const isPostAlreadyBookmarked = user.bookmarks.indexOf(req.params.id)>-1;
+    if(!isPostAlreadyBookmarked) {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.body.userId, 
+        {$push: {bookmarks: req.params.id}}, 
+        {new: true}
+      )
+      res.status(200).json(updatedUser);
     } else {
-      res.status(403).json("User does not exist");
+      const updatedUser = await User.findByIdAndUpdate(
+        req.body.userId,
+        {$pull: {bookmarks: req.params.id}}, 
+        {new: true}
+      )
+      res.status(200).json(updatedUser);
     }
-  } catch (err) {
-    res.status(500).json(err);
+  } catch(error) {
+    res.status(500).json(error);
   }
+
+
+  // try {
+  //   const user = await User.findById(req.body.userId);
+  //   if(user) {
+  //     const post = await Post.findById(req.params.id);
+  //     if(post) {
+  //       const postFound = user.bookmarks.some(el => el._id.toString() === req.params.id);
+  //       if(!postFound) {
+  //         await user.updateOne({ $push: { bookmarks: post } }, {new: true});
+  //         res.status(200).json(user);
+  //       }
+  //       else {
+  //         await user.updateOne({ $pull: { bookmarks: { _id: mongoose.Types.ObjectId(req.params.id) } } }, {new: true});
+  //         res.status(200).json(user);
+  //       }
+  //     } else {
+  //       res.status(403).json("Post does not exist");
+  //     }
+  //   } else {
+  //     res.status(403).json("User does not exist");
+  //   }
+  // } catch (err) {
+  //   res.status(500).json(err);
+  // }
 });
 
 // get posts with particular tag
@@ -167,11 +197,7 @@ router.get('/:tag/tag', async (req,res) => {
 router.get('/:id/following', async (req,res) => {  
   try {
     const user = await User.findById(req.params.id);
-    let arr = [];
-    user.followings.forEach(ele => {
-      arr.push(ele._id);
-    })
-    const posts = await Post.find({$and: [{userId: {$in: arr}}, {isPublished: true}]});
+    const posts = await Post.find({$and: [{userId: {$in: user.followings}}, {isPublished: true}]});
     res.status(200).json(posts);
   } catch(err) {
     res.status(500).json(err);
@@ -197,5 +223,20 @@ router.get('/', async (req,res) => {
     res.status(500).json(err);
   }
 })
+
+// all posts which have atleast one tag present in the given tag array
+router.get('/tagsarray/withgiventags', async (req, res) => {
+  try {
+    // console.log(JSON.parse(req.body.tagsArray));
+    // const posts = await Post.find({$and: [{tags: { $elemMatch:  {$in: req.body.tagsArray}}}, {isPublished: true}]})
+    const posts = await Post.find();
+    res.status(200).json(posts);
+  } catch(error) {
+    res.status(500).json(error);
+  }
+})
+
+
+
 module.exports = router;
 
