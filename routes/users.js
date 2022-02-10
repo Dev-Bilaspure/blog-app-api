@@ -37,8 +37,13 @@ router.put("/:id", async (req, res) => {
 router.get("/userbyid/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    const { password, updatedAt, followers, followings, ...other } = user._doc;
-    res.status(200).json(other);
+    if(user) {
+      const { password, updatedAt, followers, followings, ...other } = user._doc;
+      res.status(200).json(other);
+    }
+    else {
+      res.status(400).json("User does not exist");
+    }
   } catch (err) {
     res.status(500).json(err);
   }
@@ -48,8 +53,13 @@ router.get("/userbyid/:id", async (req, res) => {
 router.get("/userbyusername/:username", async(req,res) => {
   try {
     const user = await User.findOne({username: req.params.username});
-    const { password, updatedAt, bookmarks, ...other } = user._doc;
-    res.status(200).json(other);
+    if(user) {
+      const { password, updatedAt, bookmarks, ...other } = user._doc;
+      res.status(200).json(other);
+    }
+    else {
+      res.status(400).json("User does not exist");
+    }
   } catch(error) {
     console.log(error);
   }
