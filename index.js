@@ -20,6 +20,8 @@ app.use(cors())
 app.use(helmet());
 app.use(morgan("common"));
 
+const PORT = process.env.PORT || 5000;
+
 const URL = process.env.MONGODB_URL;
 mongoose.connect(URL, {
   useNewUrlParser: true,
@@ -54,6 +56,6 @@ app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/posts", postRoute);
 
-app.listen(5000, () => {
+app.listen(PORT, () => {
   console.log("Server running on port 5000...");
 });
