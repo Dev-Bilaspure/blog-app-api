@@ -63,7 +63,7 @@ http://localhost:5000/api/posts/:id/following  =>  get
 http://localhost:5000/api/posts/:id  =>  get
 
 // to get all published posts from every user
-http://localhost:5000/api/posts/   =>  get
+http://localhost:5000/api/posts/   => get
 
 // to get all post bookmark by a user
 http://localhost:5000/api/posts/:id/bookmark  =>  get
